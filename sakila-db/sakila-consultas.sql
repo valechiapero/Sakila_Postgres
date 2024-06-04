@@ -50,12 +50,12 @@ AND l.name = 'French';
 
 -- Mostrar nombre ciudad y nombre de país (en MAYÚSCULAS) de todas las ciudades de los países
 -- (Austria, Chile, France) ordenadas por país luego nombre localidad (10 filas) [UPPER]
-SELECT UPPER(ci.city) AS city_name,
+SELECT UPPER(ci.name) AS city_name,
        UPPER(co.country) AS country_name
 FROM sakila.city ci
 JOIN sakila.country co ON ci.country_id = co.country_id
 WHERE UPPER(co.country) IN ('AUSTRIA', 'CHILE', 'FRANCE')
-ORDER BY UPPER(co.country), ci.city;
+ORDER BY UPPER(co.country), ci.name;
 
 --Mostrar el apellido (minúsculas) concatenado al nombre (MAYÚSCULAS) cuyo apellido de los actores contenga SS. 
 --(7 Filas) [LIKE, UPPER, LOWER]
@@ -75,7 +75,7 @@ JOIN sakila.store s ON i.store_id = s.store_id
 JOIN sakila.address a ON s.address_id = a.address_id
 JOIN sakila.city c ON a.city_id = c.city_id
 WHERE EXTRACT(DAY FROM r.rental_date) = 26
-AND c.city = 'Woodridge';
+AND c.name = 'Woodridge';
 
 --date_part
 SELECT i.inventory_id, f.title
@@ -86,7 +86,7 @@ JOIN sakila.store s ON i.store_id = s.store_id
 JOIN sakila.address a ON s.address_id = a.address_id
 JOIN sakila.city c ON a.city_id = c.city_id
 WHERE DATE_PART('day', r.rental_date) = 26
-AND c.city = 'Woodridge';
+AND c.name = 'Woodridge';
 
 --Mostrar la segunda pagina (cada una tiene 10 películas) del listado nombre de la película ,
 -- lenguaje original y valor de reposición de la películas ordenadas por su valor de reposición del mas caro al mas barato 
@@ -227,11 +227,11 @@ GROUP BY c.customer_id
 HAVING SUM(p.amount) > 40;
 
 --Mostrar la cantidad del clientes hay por ciudad
-SELECT ci.city AS city_name, COUNT(c.customer_id) AS customer_count
+SELECT ci.name AS city_name, COUNT(c.customer_id) AS customer_count
 FROM sakila.customer c
 JOIN sakila.address a ON c.address_id = a.address_id
 JOIN sakila.city ci ON a.city_id = ci.city_id
-GROUP BY ci.city
+GROUP BY ci.name
 ORDER BY customer_count DESC;
 
 --Mostrar las 5 películas con mayor cantidad de actores
