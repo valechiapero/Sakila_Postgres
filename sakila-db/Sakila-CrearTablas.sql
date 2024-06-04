@@ -13,34 +13,11 @@ CREATE TABLE actor (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: address
-CREATE TABLE address (
-    address_id SERIAL PRIMARY KEY,
-    address VARCHAR(50) NOT NULL,
-    address2 VARCHAR(50),
-    district VARCHAR(20) NOT NULL,
-    city_id INT NOT NULL,
-    postal_code VARCHAR(10),
-    phone VARCHAR(20) NOT NULL,
-    location VARCHAR(255),
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (city_id) REFERENCES city (city_id) ON DELETE RESTRICT ON UPDATE CASCADE
-);
-
 -- Table: category
 CREATE TABLE category (
     category_id SERIAL PRIMARY KEY,
     name VARCHAR(25) NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: city
-CREATE TABLE city (
-    city_id SERIAL PRIMARY KEY,
-    city VARCHAR(50) NOT NULL,
-    country_id INT NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (country_id) REFERENCES country(country_id)
 );
 
 -- Table: country
@@ -50,19 +27,27 @@ CREATE TABLE country (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table: customer
-CREATE TABLE customer (
-    customer_id SERIAL PRIMARY KEY,
-    store_id INT NOT NULL,
-    first_name VARCHAR(45) NOT NULL,
-    last_name VARCHAR(45) NOT NULL,
-    email VARCHAR(50),
-    address_id INT NOT NULL,
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    create_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+-- Table: language
+CREATE TABLE language (
+    language_id SERIAL PRIMARY KEY,
+    name CHAR(40) NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table: film_text
+CREATE TABLE film_text (
+    film_id INT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT
+);
+
+-- Table: city
+CREATE TABLE city (
+    city_id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    country_id INT NOT NULL,
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (store_id) REFERENCES store(store_id),
-    FOREIGN KEY (address_id) REFERENCES address(address_id)
+    FOREIGN KEY (country_id) REFERENCES country(country_id)
 );
 
 -- Table: film
@@ -104,56 +89,18 @@ CREATE TABLE film_category (
     FOREIGN KEY (category_id) REFERENCES category(category_id)
 );
 
--- Table: film_text
-CREATE TABLE film_text (
-    film_id INT PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT
-);
-
--- Table: inventory
-CREATE TABLE inventory (
-    inventory_id SERIAL PRIMARY KEY,
-    film_id INT NOT NULL,
-    store_id INT NOT NULL,
+-- Table: address
+CREATE TABLE address (
+    address_id SERIAL PRIMARY KEY,
+    address VARCHAR(50) NOT NULL,
+    address2 VARCHAR(50),
+    district VARCHAR(20) NOT NULL,
+    city_id INT NOT NULL,
+    postal_code VARCHAR(10),
+    phone VARCHAR(20) NOT NULL,
+    location VARCHAR(255),
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (film_id) REFERENCES film(film_id),
-    FOREIGN KEY (store_id) REFERENCES store(store_id)
-);
-
--- Table: language
-CREATE TABLE language (
-    language_id SERIAL PRIMARY KEY,
-    name CHAR(40) NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table: payment
-CREATE TABLE payment (
-    payment_id SERIAL PRIMARY KEY,
-    customer_id INT NOT NULL,
-    staff_id INT NOT NULL,
-    rental_id INT,
-    amount NUMERIC(5,2) NOT NULL,
-    payment_date TIMESTAMP NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    FOREIGN KEY (staff_id) REFERENCES staff(staff_id),
-    FOREIGN KEY (rental_id) REFERENCES rental(rental_id)
-);
-
--- Table: rental
-CREATE TABLE rental (
-    rental_id SERIAL PRIMARY KEY,
-    rental_date TIMESTAMP NOT NULL,
-    inventory_id INT NOT NULL,
-    customer_id INT NOT NULL,
-    return_date TIMESTAMP,
-    staff_id INT NOT NULL,
-    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id),
-    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
-    FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+    FOREIGN KEY (city_id) REFERENCES city (city_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Table: staff
@@ -180,4 +127,57 @@ CREATE TABLE store (
     last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (manager_staff_id) REFERENCES staff(staff_id),
     FOREIGN KEY (address_id) REFERENCES address(address_id)
+);
+
+-- Table: customer
+CREATE TABLE customer (
+    customer_id SERIAL PRIMARY KEY,
+    store_id INT NOT NULL,
+    first_name VARCHAR(45) NOT NULL,
+    last_name VARCHAR(45) NOT NULL,
+    email VARCHAR(50),
+    address_id INT NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    create_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (store_id) REFERENCES store(store_id),
+    FOREIGN KEY (address_id) REFERENCES address(address_id)
+);
+
+-- Table: inventory
+CREATE TABLE inventory (
+    inventory_id SERIAL PRIMARY KEY,
+    film_id INT NOT NULL,
+    store_id INT NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (film_id) REFERENCES film(film_id),
+    FOREIGN KEY (store_id) REFERENCES store(store_id)
+);
+
+-- Table: rental
+CREATE TABLE rental (
+    rental_id SERIAL PRIMARY KEY,
+    rental_date TIMESTAMP NOT NULL,
+    inventory_id INT NOT NULL,
+    customer_id INT NOT NULL,
+    return_date TIMESTAMP,
+    staff_id INT NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (inventory_id) REFERENCES inventory(inventory_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+);
+
+-- Table: payment
+CREATE TABLE payment (
+    payment_id SERIAL PRIMARY KEY,
+    customer_id INT NOT NULL,
+    staff_id INT NOT NULL,
+    rental_id INT,
+    amount NUMERIC(5,2) NOT NULL,
+    payment_date TIMESTAMP NOT NULL,
+    last_update TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    FOREIGN KEY (staff_id) REFERENCES staff(staff_id),
+    FOREIGN KEY (rental_id) REFERENCES rental(rental_id)
 );
